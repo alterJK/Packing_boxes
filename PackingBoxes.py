@@ -7,7 +7,7 @@ first_w_coord = []
 first_l_coord = []
 
 
-def check_busy_coordinates(current_first_coord, kol, current_w, current_l, k):
+def check_busy_coordinates(current_first_coord, kol, current_w, current_l):
     coord_w = current_first_coord[0]
     coord_l = current_first_coord[1]
     #проверка на то, что точка является первой 
@@ -20,20 +20,7 @@ def check_busy_coordinates(current_first_coord, kol, current_w, current_l, k):
                 return False
         #проверка на наложение на вписанные прямоугольники        
         for i in range(kol-1):
-            if k == 1 and i==3:
-                f_w = coord_w
-                l_w = coord_w+current_w-1
-                f_l = coord_l
-                l_l = coord_l+current_l-1
-                f_w_r = coordinates[i][0][0]
-                l_w_r = coordinates[i][1][0]
-                f_l_r = coordinates[i][0][1]
-                l_l_r = coordinates[i][1][1]
             if (
-#                (coord_w>=coordinates[i][0][0] and coord_w<=coordinates[i][1][0]) and 
-#                (coord_l>=coordinates[i][0][1] and coord_l<=coordinates[i][1][1]) and
-#                (coord_w+current_w-1>=coordinates[i][0][0] and coord_w+current_w<=coordinates[i][1][0]) and 
-#                (coord_l+current_l>=coordinates[i][0][1] and coord_l+current_l<=coordinates[i][1][1])
                 #проверка первой координаты вписываемого прямогольника                
                 ((coord_w>=coordinates[i][0][0]) and (coord_w<=coordinates[i][1][0]) and
                  (coord_l>=coordinates[i][0][1]) and (coord_l<=coordinates[i][1][1])) or
@@ -48,13 +35,12 @@ def check_busy_coordinates(current_first_coord, kol, current_w, current_l, k):
     
 def find_place(count, kol, current_w, current_l):
     for i in range(kol-1):
-        current = [coordinates[i][0][0],coordinates[i][1][1]+1]
         k=0
-        if kol ==5 and (current[0] == 4 and current[1] == 3):
+        if kol == 4:
             k=1
-        
+        current = [coordinates[i][0][0],coordinates[i][1][1]+1]        
         #если справа есть свободное место или вписанных только один
-        if (check_busy_coordinates(current, kol, current_w, current_l, k) or (kol == 1)):
+        if (check_busy_coordinates(current, kol, current_w, current_l) or (kol == 1)):
             #если уместится по ширине и длине
             if ((WIDTHS[0]-coordinates[i][0][0]>=current_w) and
                 (LENGTHS[0]-coordinates[i][1][1]>=current_l)):
@@ -66,24 +52,32 @@ def find_place(count, kol, current_w, current_l):
                 first_l_coord.append(coordinates[i][1][1]+1)
                 return True
         current = [coordinates[i][1][0]+1,coordinates[i][0][1]]        
-        if (check_busy_coordinates(current, kol, current_w, current_l, k) or (kol == 1)):
+        if (check_busy_coordinates(current, kol, current_w, current_l) or (kol == 1)):
             #если уместится по ширине и длине
             if ((WIDTHS[0]-coordinates[i][1][0]-1>=current_w) and
                 ((LENGTHS[0]-coordinates[i][0][1]-1>=current_l) or
                  (LENGTHS[0]-coordinates[i][0][1]-1 == 0))):
 #------------------------------------------------------------------------------
-                #проверка на свободное место слева
-#                check_current = [current[0], current[1]-1]
-#                while(check_current[1]>=0):
-#                    check_busy_coordinates(check_current, kol)
-#                    check_current[1] -= 1
+                #проверка на свободное место слева от предполагаемой начальной координаты
+                position = 0
+                fl_new = False
+                check_current = [current[0], current[1]-position]
+                while(check_current[1]>0 and (fl_new == False)):
+                    position += 1
+                    check_current = [current[0], current[1]-position]
+                    fl_new = check_busy_coordinates(check_current, kol, current_w, current_l)
+                    if fl_new:                  
+                        check_current[1] -= 1
+                    else:
+                        position -= 1
+                current = [current[0], current[1] - position]
 #------------------------------------------------------------------------------
                 coordinates.append([[coordinates[i][1][0]+1,
-                                     coordinates[i][0][1]],
+                                     coordinates[i][0][1]- position],
                                     [coordinates[i][1][0]+current_w,
-                                     coordinates[i][0][1]+current_l-1]])
+                                     coordinates[i][0][1]- position+current_l-1]])
                 first_w_coord.append(coordinates[i][1][0]+1)
-                first_l_coord.append(coordinates[i][0][1])
+                first_l_coord.append(coordinates[i][0][1]- position)
                 return True
     return False
 

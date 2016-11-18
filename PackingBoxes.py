@@ -12,7 +12,7 @@ def check_busy_coordinates(current_first_coord, kol, current_w, current_l, k):
     coord_l = current_first_coord[1]
     #проверка на то, что точка является первой 
     #координатой вписанного прямоугольника
-    if ((coord_w<WIDTHS[0] and coord_l<LENGTHS[0]) or
+    if ((coord_w<WIDTHS[0] and coord_l<LENGTHS[0]) and
         (coord_w+current_w-1<WIDTHS[0] and coord_l+current_l-1<LENGTHS[0])):
         for i in range(kol-1):
             #проверка на совпадение с первой координатой

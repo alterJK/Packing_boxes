@@ -3,10 +3,12 @@ LENGTHS = [] #массив длины
 SQUARES = [] #площади прямоугольников
     
 coordinates = []#лист для хранения координат
+fl_turn = False #флаг использования поворота
 first_w_coord = []
 first_l_coord = []
 
 
+#проверка предполагаемой первой координаты
 def check_busy_coordinates(coord_w, coord_l, kol, current_w, current_l):
     #проверка на то, что точка является первой 
     #координатой вписанного прямоугольника
@@ -32,6 +34,8 @@ def check_busy_coordinates(coord_w, coord_l, kol, current_w, current_l):
         return False
     return True
     
+    
+#поиск свободного места    
 def find_place(count, kol, current_w, current_l):
     for i in range(kol-1):       
         #если справа есть свободное место или вписанных только один
@@ -86,7 +90,15 @@ def binary_packing(count):
             if find_place(count, kol, current_w, current_l):
                 kol += 1 
             else:
-                return False
+                #поиск свободного места при условии возможности поворота вписываемого прямоугольника
+                if find_place(count, kol, current_l, current_w):
+                    global fl_turn 
+                    fl_turn = True
+                    kol += 1 
+                else:
+                    return False
+#            else:
+#                return False        
     return True
                 
         
@@ -148,10 +160,11 @@ def main():
             print ("Задачи не имеют решений при данных параметрах прямоугольников")
         else:
             #упаковка прямоугольников
-            fl = binary_packing(count)
-            print (coordinates)
-            if fl:
-                print("Задача имеет решение (без поворотов прямоугольников)")
+            if binary_packing(count):
+                if fl_turn:
+                    print("Задача имеет решение (c поворотом прямоугольников)")
+                else:
+                    print("Задача имеет решение (без поворотов прямоугольников)")
             else:
                 print ("Задачи не имеют решений при данных параметрах прямоугольников")
 

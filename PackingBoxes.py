@@ -1,3 +1,5 @@
+import time
+
 WIDTHS = [] #массив ширины
 LENGTHS = [] #массив длины
 SQUARES = [] #площади прямоугольников
@@ -145,6 +147,7 @@ def write_from_file():
   
 # основная функция  
 def main():
+    t = time.clock()
     write_from_file()
     count = len(WIDTHS)
     if (check_for_errors(count)):
@@ -167,6 +170,7 @@ def main():
                     print("Задача имеет решение (без поворотов прямоугольников)")
             else:
                 print ("Задачи не имеют решений при данных параметрах прямоугольников")
+    print( "Время выполнения алгоритма ", time.clock() - t )
 
       
 if __name__=='__main__':
